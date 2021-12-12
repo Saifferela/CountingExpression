@@ -1,24 +1,53 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public class Calculations {
 
-    public double calculate(String formula){
-        List<String> list = List.of(formula.split("\\W"));
-        List<String> numbers = new ArrayList<>();
+    public double calculate(String formula) {
 
-        if(list.get(list.size()-1).equals("0")){
-            throw new ArithmeticException("/ by zero");
+        List<String> str = List.of(formula.split("[ ]"));
+
+        // Если есть скобочки.
+        if (str.contains("(")) {
+            for (int i = str.indexOf("("); i < str.size(); i++) {
+
+                if (str.get(i).equals("(")) {
+                    for (int j = i; j < str.lastIndexOf(")"); j++) {
+
+                    }
+                }
+
+                if (str.contains(")")) {
+                    for (int j = i; j < str.lastIndexOf(")"); j++) {
+                        System.out.println();
+                    }
+                }
+            }
         }
 
-        for(String str: list){
-            if(str.equals(""))
-                continue;
+        // Если нет скобочек.
+        else {
+            double result;
+            result = Double.parseDouble(str.get(0));
 
-            numbers.add(str);
+            for (int i = 0; i < str.size(); i++) {
+                if (str.get(i).equals("*")) {
+                    result *= Double.parseDouble(str.get(i + 2));
+                }
+                if (str.get(i).equals("/")) {
+                    result /= Double.parseDouble(str.get(i + 2));
+                }
+                if (str.get(i).equals("+")) {
+                    result += Double.parseDouble(str.get(i + 2));
+                }
+                if (str.get(i).equals("-")) {
+                    result -= Double.parseDouble(str.get(i + 2));
+                }
+            }
+
+            return result;
+
         }
 
-        return (Double.parseDouble(numbers.get(0)) * Double.parseDouble(numbers.get(1))
-                + Double.parseDouble(numbers.get(2)) + Double.parseDouble(numbers.get(3)) / Double.parseDouble(numbers.get(4)));
+        return 0;
     }
 }
