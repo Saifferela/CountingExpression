@@ -2,52 +2,107 @@ import java.util.List;
 
 public class Calculations {
 
+    private String formula = "";
+    private List<String> expression;
+    private int index = 0;
+
+    // Метод вычисления '+' , '-'
     public double calculate(String formula) {
 
-        List<String> str = List.of(formula.split("[ ]"));
+        this.formula = formula;
 
-        // Если есть скобочки.
-        if (str.contains("(")) {
-            for (int i = str.indexOf("("); i < str.size(); i++) {
+        // Получение элементов выражения.
+        this.expression = List.of(formula.split(" "));
 
-                if (str.get(i).equals("(")) {
-                    for (int j = i; j < str.lastIndexOf(")"); j++) {
+        // Сначала отработает метод на поиск "*, /"
+        double first = multiply();
 
-                    }
-                }
+        while (index < expression.size()) {
 
-                if (str.contains(")")) {
-                    for (int j = i; j < str.lastIndexOf(")"); j++) {
-                        System.out.println();
-                    }
-                }
+            String operator = expression.get(index);
+
+            if (!operator.equals("+") && !operator.equals("-")) {
+                break;
+            } else {
+                index++;
+            }
+
+            double second = multiply();
+
+            if (operator.equals("+")) {
+                first += second;
+            } else {
+                first -= second;
             }
         }
 
-        // Если нет скобочек.
-        else {
-            double result;
-            result = Double.parseDouble(str.get(0));
+        return first;
+    }
 
-            for (int i = 0; i < str.size(); i++) {
-                if (str.get(i).equals("*")) {
-                    result *= Double.parseDouble(str.get(i + 2));
-                }
-                if (str.get(i).equals("/")) {
-                    result /= Double.parseDouble(str.get(i + 2));
-                }
-                if (str.get(i).equals("+")) {
-                    result += Double.parseDouble(str.get(i + 2));
-                }
-                if (str.get(i).equals("-")) {
-                    result -= Double.parseDouble(str.get(i + 2));
-                }
+    // Метод вычисления '*' , '/'
+    private double multiply() {
+
+        // Сначала отработает метод на поиск "(, )"
+        double first = factor();
+
+        while (index < expression.size()) {
+
+            String operator = expression.get(index);
+
+            if (!operator.equals("*") && !operator.equals("/")) {
+                break;
+            } else {
+                index++;
             }
 
-            return result;
+            double second = factor();
 
+            if (operator.equals("*")) {
+                first *= second;
+            } else {
+                if (second == 0)
+                    throw new ArithmeticException("/ by zero");
+                first /= second;
+            }
+        }
+        return first;
+    }
+
+    // Метод для поиска скобок.
+    private double factor() {
+
+        String next = expression.get(index);
+        double result;
+
+        if (next.equals("(")) {
+            index++;
+            result = calculate(this.formula);
+            String closingBracket;
+
+            if (index < expression.size()) {
+                closingBracket = expression.get(index);
+            } else {
+                throw new IllegalArgumentException("Unexpected end of expression");
+            }
+
+            if (closingBracket.equals(")")) {
+                index++;
+
+                return result;
+            }
+            throw new IllegalArgumentException("')' expected but " + closingBracket + " fount");
         }
 
-        return 0;
+        index++;
+
+        try {
+            return Double.parseDouble(next);
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException("Spaces are not inserted!");
+        }
     }
 }
+
+
+
+
